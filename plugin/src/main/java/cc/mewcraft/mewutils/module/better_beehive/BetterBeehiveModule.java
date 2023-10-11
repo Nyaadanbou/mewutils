@@ -1,7 +1,7 @@
 package cc.mewcraft.mewutils.module.better_beehive;
 
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import com.google.inject.Inject;
 
 public class BetterBeehiveModule extends ModuleBase {
@@ -14,11 +14,6 @@ public class BetterBeehiveModule extends ModuleBase {
     @Override
     protected void enable() {
         registerListener(new BeehiveListener(this));
-    }
-
-    @Override
-    public boolean checkRequirement() {
-        return true;
     }
 
 }

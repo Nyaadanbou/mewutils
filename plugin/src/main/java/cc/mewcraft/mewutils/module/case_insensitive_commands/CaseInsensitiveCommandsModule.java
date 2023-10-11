@@ -1,17 +1,17 @@
 package cc.mewcraft.mewutils.module.case_insensitive_commands;
 
-import cc.mewcraft.mewcore.listener.AutoCloseableListener;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import com.google.inject.Inject;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.Locale;
 
 
-public class CaseInsensitiveCommandsModule extends ModuleBase implements AutoCloseableListener {
+public class CaseInsensitiveCommandsModule extends ModuleBase implements Listener {
     @Inject
     public CaseInsensitiveCommandsModule(final MewPlugin parent) {
         super(parent);

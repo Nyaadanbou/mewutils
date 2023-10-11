@@ -12,19 +12,17 @@ import me.lucko.helper.terminable.Terminable;
 
 public class ProtocolLibHook implements Terminable {
 
-    private final StringReplacerModule module;
     private final ProtocolManager protocolManager;
 
     // packet listeners
     private final PacketAdapter inventoryTitleReplacer;
 
     public ProtocolLibHook(final StringReplacerModule module) {
-        this.module = module;
         this.protocolManager = ProtocolLibrary.getProtocolManager();
 
         // --- define packet listeners ---
         this.inventoryTitleReplacer = new PacketAdapter(
-            module.getParentPlugin(), ListenerPriority.HIGHEST, PacketType.Play.Server.OPEN_WINDOW
+                module.getParentPlugin(), ListenerPriority.HIGHEST, PacketType.Play.Server.OPEN_WINDOW
         ) {
             @Override public void onPacketSending(final PacketEvent event) {
                 PacketContainer packet = event.getPacket();

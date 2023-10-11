@@ -1,8 +1,7 @@
 package cc.mewcraft.mewutils.module.color_palette;
 
-import cc.mewcraft.mewcore.hook.HookChecker;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import com.google.inject.Inject;
 
 import java.util.List;
@@ -18,8 +17,8 @@ public class ColorPaletteModule extends ModuleBase {
     public ColorPaletteModule(final MewPlugin plugin) {
         super(plugin);
         this.furnitureHandlers = List.of(
-            new ArmorStandPaletteHandler(this),
-            new ItemFramePaletteHandler(this)
+                new ArmorStandPaletteHandler(this),
+                new ItemFramePaletteHandler(this)
         );
     }
 
@@ -28,7 +27,7 @@ public class ColorPaletteModule extends ModuleBase {
     }
 
     @Override public boolean checkRequirement() {
-        return HookChecker.hasItemsAdder();
+        return isPluginPresent("ItemsAdder");
     }
 
 }

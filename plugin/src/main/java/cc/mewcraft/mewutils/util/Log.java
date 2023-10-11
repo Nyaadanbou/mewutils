@@ -27,9 +27,10 @@ package cc.mewcraft.mewutils.util;
 
 import cc.mewcraft.mewutils.MewUtils;
 import org.bukkit.Bukkit;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.logging.Level;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Utility for quickly accessing a logger instance without using {@link Bukkit#getLogger()}

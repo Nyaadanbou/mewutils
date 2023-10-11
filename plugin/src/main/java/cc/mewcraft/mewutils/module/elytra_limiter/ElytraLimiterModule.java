@@ -1,20 +1,25 @@
 package cc.mewcraft.mewutils.module.elytra_limiter;
 
-import cc.mewcraft.mewcore.cooldown.StackableCooldownMap;
-import cc.mewcraft.mewcore.progressbar.ProgressbarGenerator;
-import cc.mewcraft.mewcore.progressbar.ProgressbarDisplay;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import com.google.inject.Inject;
 import me.lucko.helper.cooldown.Cooldown;
+import me.lucko.helper.cooldown.StackableCooldownMap;
+import me.lucko.helper.progressbar.ProgressbarDisplay;
+import me.lucko.helper.progressbar.ProgressbarGenerator;
 import org.bukkit.entity.Player;
+
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @DefaultQualifier(NonNull.class)
 public class ElytraLimiterModule extends ModuleBase {
@@ -32,32 +37,32 @@ public class ElytraLimiterModule extends ModuleBase {
     }
 
     @Override protected void load() throws Exception {
-        this.restrictedWorlds = new HashSet<>(getConfigNode().node("worlds").getList(String.class, List.of()));
+        this.restrictedWorlds = new HashSet<>(configNode().node("worlds").getList(String.class, List.of()));
 
-        this.restrictedBoost = getConfigNode().node("methods")
-            .getList(String.class, List.of())
-            .stream().map(BoostMethod::valueOf)
-            .collect(Collectors.toCollection(() -> EnumSet.noneOf(BoostMethod.class)));
+        this.restrictedBoost = configNode().node("methods")
+                .getList(String.class, List.of())
+                .stream().map(BoostMethod::valueOf)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(BoostMethod.class)));
 
         this.cooldownMap = StackableCooldownMap.create(
-            Cooldown.of(getConfigNode().node("cooldown").getInt(), TimeUnit.MILLISECONDS),
-            uuid -> getConfigNode().node("stacks").getLong()
+                Cooldown.of(configNode().node("cooldown").getInt(), TimeUnit.MILLISECONDS),
+                uuid -> configNode().node("stacks").getLong()
         );
 
         this.progressbarDisplay = new ProgressbarDisplay(
-            getConfigNode().node("bar_stay_time").getInt(),
-            ProgressbarGenerator.Builder.builder()
-                .left(getLang().of("slow_elytra.cooldown_progressbar.left").plain())
-                .full(getLang().of("slow_elytra.cooldown_progressbar.full").plain())
-                .empty(getLang().of("slow_elytra.cooldown_progressbar.empty").plain())
-                .right(getLang().of("slow_elytra.cooldown_progressbar.right").plain())
-                .width(getConfigNode().node("bar_width").getInt())
-                .build()
+                configNode().node("bar_stay_time").getInt(),
+                ProgressbarGenerator.builder()
+                        .left(translations().of("slow_elytra.cooldown_progressbar.left").plain())
+                        .full(translations().of("slow_elytra.cooldown_progressbar.full").plain())
+                        .empty(translations().of("slow_elytra.cooldown_progressbar.empty").plain())
+                        .right(translations().of("slow_elytra.cooldown_progressbar.right").plain())
+                        .width(configNode().node("bar_width").getInt())
+                        .build()
         );
 
-        this.velocityMultiply = getConfigNode().node("velocity_multiply").getDouble();
+        this.velocityMultiply = configNode().node("velocity_multiply").getDouble();
 
-        this.tpsThreshold = getConfigNode().node("tps_threshold").getDouble();
+        this.tpsThreshold = configNode().node("tps_threshold").getDouble();
     }
 
     @Override protected void enable() {
@@ -88,8 +93,4 @@ public class ElytraLimiterModule extends ModuleBase {
         return this.velocityMultiply;
     }
 
-    @Override
-    public boolean checkRequirement() {
-        return true;
-    }
 }

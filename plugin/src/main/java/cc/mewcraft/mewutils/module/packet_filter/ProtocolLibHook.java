@@ -8,12 +8,14 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.injector.temporary.TemporaryPlayer;
-import com.comphenix.protocol.injector.temporary.TemporaryPlayerFactory;
 import me.lucko.helper.terminable.Terminable;
 import org.bukkit.entity.EntityType;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class ProtocolLibHook implements Terminable {
 
@@ -36,35 +38,35 @@ public class ProtocolLibHook implements Terminable {
 
         this.entityPackets = new PacketTypeSet();
         this.entityPackets.addAll(Arrays.asList(
-            PacketType.Play.Server.SPAWN_ENTITY,
-            PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
-            PacketType.Play.Server.NAMED_ENTITY_SPAWN,
-            PacketType.Play.Server.ENTITY_STATUS,
-            PacketType.Play.Server.REL_ENTITY_MOVE,
-            PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
-            PacketType.Play.Server.ENTITY_LOOK,
-            PacketType.Play.Server.ENTITY_DESTROY,
-            PacketType.Play.Server.REMOVE_ENTITY_EFFECT,
-            PacketType.Play.Server.ENTITY_HEAD_ROTATION,
-            PacketType.Play.Server.ENTITY_METADATA,
-            PacketType.Play.Server.ENTITY_VELOCITY,
-            PacketType.Play.Server.ENTITY_EQUIPMENT,
-            PacketType.Play.Server.ENTITY_SOUND,
-            PacketType.Play.Server.ENTITY_TELEPORT,
-            PacketType.Play.Server.ENTITY_EFFECT
+                PacketType.Play.Server.SPAWN_ENTITY,
+                PacketType.Play.Server.SPAWN_ENTITY_EXPERIENCE_ORB,
+                PacketType.Play.Server.NAMED_ENTITY_SPAWN,
+                PacketType.Play.Server.ENTITY_STATUS,
+                PacketType.Play.Server.REL_ENTITY_MOVE,
+                PacketType.Play.Server.REL_ENTITY_MOVE_LOOK,
+                PacketType.Play.Server.ENTITY_LOOK,
+                PacketType.Play.Server.ENTITY_DESTROY,
+                PacketType.Play.Server.REMOVE_ENTITY_EFFECT,
+                PacketType.Play.Server.ENTITY_HEAD_ROTATION,
+                PacketType.Play.Server.ENTITY_METADATA,
+                PacketType.Play.Server.ENTITY_VELOCITY,
+                PacketType.Play.Server.ENTITY_EQUIPMENT,
+                PacketType.Play.Server.ENTITY_SOUND,
+                PacketType.Play.Server.ENTITY_TELEPORT,
+                PacketType.Play.Server.ENTITY_EFFECT
         ));
 
         this.whitelistEntityIds = Collections.newSetFromMap(new WeakHashMap<>());
 
         //region Packet listeners
         this.packetBlocker = new PacketAdapter(
-            module.getParentPlugin(),
-            ListenerPriority.HIGHEST,
-            module.blockedPacketTypes.stream().flatMap(name -> {
-                Collection<PacketType> packetTypes = PacketType.fromName(name);
-                if (packetTypes.isEmpty()) module.warn("Unknown packet type: " + name);
-                return packetTypes.stream();
-            }).toList()
+                module.getParentPlugin(),
+                ListenerPriority.HIGHEST,
+                module.blockedPacketTypes.stream().flatMap(name -> {
+                    Collection<PacketType> packetTypes = PacketType.fromName(name);
+                    if (packetTypes.isEmpty()) module.warn("Unknown packet type: " + name);
+                    return packetTypes.stream();
+                }).toList()
         ) {
             @Override
             public void onPacketSending(PacketEvent event) {
@@ -89,9 +91,9 @@ public class ProtocolLibHook implements Terminable {
             }
         };
         this.entityLogger = new PacketAdapter(
-            module.getParentPlugin(),
-            ListenerPriority.MONITOR,
-            PacketType.Play.Server.SPAWN_ENTITY
+                module.getParentPlugin(),
+                ListenerPriority.MONITOR,
+                PacketType.Play.Server.SPAWN_ENTITY
         ) {
             @Override
             public void onPacketSending(PacketEvent event) {

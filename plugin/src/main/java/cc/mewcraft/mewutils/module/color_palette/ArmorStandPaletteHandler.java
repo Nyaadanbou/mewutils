@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+
 import org.jetbrains.annotations.NotNull;
 
 /**

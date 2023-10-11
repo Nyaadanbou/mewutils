@@ -1,12 +1,12 @@
 package cc.mewcraft.mewutils.module.fireball_utils;
 
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.MewUtils;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import cloud.commandframework.arguments.standard.BooleanArgument;
 import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import cloud.commandframework.bukkit.parsers.PlayerArgument;
-import cc.mewcraft.mewutils.MewUtils;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import me.lucko.helper.Schedulers;
@@ -30,16 +30,16 @@ public class FireballUtilsModule extends ModuleBase {
 
     static {
         final ImmutableMap.Builder<String, Class<? extends Projectile>> builder = ImmutableMap.<String, Class<? extends Projectile>>builder()
-            .put("fireball", Fireball.class)
-            .put("small", SmallFireball.class)
-            .put("large", LargeFireball.class)
-            .put("arrow", Arrow.class)
-            .put("skull", WitherSkull.class)
-            .put("egg", Egg.class)
-            .put("snowball", Snowball.class)
-            .put("expbottle", ThrownExpBottle.class)
-            .put("dragon", DragonFireball.class)
-            .put("trident", Trident.class);
+                .put("fireball", Fireball.class)
+                .put("small", SmallFireball.class)
+                .put("large", LargeFireball.class)
+                .put("arrow", Arrow.class)
+                .put("skull", WitherSkull.class)
+                .put("egg", Egg.class)
+                .put("snowball", Snowball.class)
+                .put("expbottle", ThrownExpBottle.class)
+                .put("dragon", DragonFireball.class)
+                .put("trident", Trident.class);
 
         types = builder.build();
         typesArray = types.keySet().toArray(String[]::new);
@@ -53,24 +53,24 @@ public class FireballUtilsModule extends ModuleBase {
 
     @Override protected void enable() {
         registerCommand(commandRegistry -> commandRegistry
-            .commandBuilder("mewutils")
-            .permission("mew.admin")
-            .literal("fireball")
-            .argument(StringArgument.<CommandSender>builder("projectile").withSuggestionsProvider((context, sting) -> List.of(typesArray)))
-            .argument(DoubleArgument.<CommandSender>builder("speed").withMax(MAX_SPEED).withSuggestionsProvider((context, string) -> List.of(speedsArray)))
-            .argument(BooleanArgument.of("ride"))
-            .argument(PlayerArgument.optional("player"))
-            .handler(context -> {
-                String projectile = types.containsKey((String) context.get("projectile")) ? (String) context.get("projectile") : "fireball";
-                double speed = context.get("speed");
-                boolean ride = context.get("ride");
-                Optional<Player> player = context.getOptional("player");
-                if (player.isPresent()) {
-                    launch(projectile, speed, ride, player.get());
-                } else if (context.getSender() instanceof Player sender) {
-                    launch(projectile, speed, ride, sender);
-                }
-            })
+                .commandBuilder("mewutils")
+                .permission("mew.admin")
+                .literal("fireball")
+                .argument(StringArgument.<CommandSender>builder("projectile").withSuggestionsProvider((context, sting) -> List.of(typesArray)))
+                .argument(DoubleArgument.<CommandSender>builder("speed").withMax(MAX_SPEED).withSuggestionsProvider((context, string) -> List.of(speedsArray)))
+                .argument(BooleanArgument.of("ride"))
+                .argument(PlayerArgument.optional("player"))
+                .handler(context -> {
+                    String projectile = types.containsKey((String) context.get("projectile")) ? (String) context.get("projectile") : "fireball";
+                    double speed = context.get("speed");
+                    boolean ride = context.get("ride");
+                    Optional<Player> player = context.getOptional("player");
+                    if (player.isPresent()) {
+                        launch(projectile, speed, ride, player.get());
+                    } else if (context.getSender() instanceof Player sender) {
+                        launch(projectile, speed, ride, sender);
+                    }
+                })
         );
     }
 
@@ -86,10 +86,6 @@ public class FireballUtilsModule extends ModuleBase {
         }
 
         Schedulers.sync().runLater(projectile::remove, 100).bindWith(this);
-    }
-
-    @Override public boolean checkRequirement() {
-        return true;
     }
 
 }

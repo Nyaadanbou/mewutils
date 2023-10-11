@@ -4,7 +4,11 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 import static org.bukkit.block.BlockFace.*;
 
@@ -19,24 +23,24 @@ public class BlockCounter {
      * 这是搜索邻居的标准，可以根据要求进行修改。
      */
     private final BlockFace[] neighbors = {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST,
-        UP,
-        DOWN,
-        NORTH_EAST,
-        NORTH_WEST,
-        SOUTH_EAST,
-        SOUTH_WEST,
-        WEST_NORTH_WEST,
-        NORTH_NORTH_WEST,
-        NORTH_NORTH_EAST,
-        EAST_NORTH_EAST,
-        EAST_SOUTH_EAST,
-        SOUTH_SOUTH_EAST,
-        SOUTH_SOUTH_WEST,
-        WEST_SOUTH_WEST
+            NORTH,
+            EAST,
+            SOUTH,
+            WEST,
+            UP,
+            DOWN,
+            NORTH_EAST,
+            NORTH_WEST,
+            SOUTH_EAST,
+            SOUTH_WEST,
+            WEST_NORTH_WEST,
+            NORTH_NORTH_WEST,
+            NORTH_NORTH_EAST,
+            EAST_NORTH_EAST,
+            EAST_SOUTH_EAST,
+            SOUTH_SOUTH_EAST,
+            SOUTH_SOUTH_WEST,
+            WEST_SOUTH_WEST
     };
 
     /**
@@ -66,7 +70,6 @@ public class BlockCounter {
     /**
      * @param start  Start location.
      * @param target The type of block you want to search for.
-     *
      * @return The number of blocks of same type as {@code target} which are the neighbors of the block at location
      * {@code start}.
      */

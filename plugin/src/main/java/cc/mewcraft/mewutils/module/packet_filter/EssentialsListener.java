@@ -1,27 +1,27 @@
 package cc.mewcraft.mewutils.module.packet_filter;
 
-import cc.mewcraft.mewcore.listener.AutoCloseableListener;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 import me.lucko.helper.utils.Players;
 import net.ess3.api.events.AfkStatusChangeEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 import java.util.Objects;
 
-public class EssentialsHook implements AutoCloseableListener {
+public class EssentialsListener implements Listener {
 
     private final PacketFilterModule module;
 
-    public EssentialsHook(final PacketFilterModule module) {
+    public EssentialsListener(final PacketFilterModule module) {
         this.module = module;
 
         Essentials essentials = Objects.requireNonNull(module.getPlugin("Essentials", Essentials.class));
         Players.all().stream()
-            .map(essentials::getUser)
-            .filter(User::isAfk)
-            .map(User::getUUID)
-            .forEach(user -> this.module.afkPlayers.add(user));
+                .map(essentials::getUser)
+                .filter(User::isAfk)
+                .map(User::getUUID)
+                .forEach(user -> this.module.afkPlayers.add(user));
     }
 
     @EventHandler

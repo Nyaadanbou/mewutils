@@ -1,12 +1,12 @@
 package cc.mewcraft.mewutils.module.color_palette;
 
-import cc.mewcraft.mewcore.listener.AutoCloseableListener;
 import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-public class FurnitureListener implements AutoCloseableListener {
+public class FurnitureListener implements Listener {
 
     private final ColorPaletteModule module;
 
@@ -22,7 +22,7 @@ public class FurnitureListener implements AutoCloseableListener {
 
             // check access
             if (!PaletteHandler.hasAccess(player, bukkitEntity)) {
-                this.module.getLang().of("msg.no_permission").send(player);
+                this.module.translations().of("msg.no_permission").send(player);
                 return;
             }
 
@@ -34,7 +34,7 @@ public class FurnitureListener implements AutoCloseableListener {
                 }
             }
 
-            this.module.getLang().of("msg.unsupported_operation").send(player);
+            this.module.translations().of("msg.unsupported_operation").send(player);
         }
     }
 

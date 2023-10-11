@@ -1,6 +1,6 @@
-package cc.mewcraft.mewutils.api.module;
+package cc.mewcraft.mewutils.module;
 
-import cc.mewcraft.mewutils.api.MewPlugin;
+import cc.mewcraft.mewutils.MewPlugin;
 import net.kyori.adventure.text.Component;
 
 import static net.kyori.adventure.text.Component.text;

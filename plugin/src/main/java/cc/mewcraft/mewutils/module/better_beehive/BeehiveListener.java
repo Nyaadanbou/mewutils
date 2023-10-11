@@ -1,13 +1,13 @@
 package cc.mewcraft.mewutils.module.better_beehive;
 
-import cc.mewcraft.mewcore.message.Translations;
-import cc.mewcraft.mewcore.listener.AutoCloseableListener;
+import cc.mewcraft.spatula.message.Translations;
 import me.lucko.helper.cooldown.Cooldown;
 import me.lucko.helper.cooldown.CooldownMap;
 import org.bukkit.Material;
 import org.bukkit.block.Beehive;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.TimeUnit;
 
-public class BeehiveListener implements AutoCloseableListener {
+public class BeehiveListener implements Listener {
 
     private final BetterBeehiveModule module;
     private final Translations lang;
@@ -24,7 +24,7 @@ public class BeehiveListener implements AutoCloseableListener {
 
     public BeehiveListener(final BetterBeehiveModule module) {
         this.module = module;
-        this.lang = module.getLang();
+        this.lang = module.translations();
         this.messageReminderCooldown = CooldownMap.create(Cooldown.of(5, TimeUnit.MINUTES));
     }
 
@@ -69,7 +69,7 @@ public class BeehiveListener implements AutoCloseableListener {
     }
 
     private boolean isSneaking(Player player) {
-        return player.isSneaking() || !this.module.getConfigNode().node("require_sneak").getBoolean();
+        return player.isSneaking() || !this.module.configNode().node("require_sneak").getBoolean();
     }
 
     private boolean isBeehive(Material type) {

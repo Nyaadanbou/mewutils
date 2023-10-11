@@ -1,5 +1,4 @@
-package cc.mewcraft.mewutils.api.module;
-
+package cc.mewcraft.mewutils.module;
 
 import com.google.common.base.CaseFormat;
 
@@ -7,6 +6,8 @@ public interface ModuleIdentifier {
 
     /**
      * Returns the long id of this module, which is upper camel case.
+     * <p>
+     * Example: `BetterBeehive`.
      *
      * @return the long id of this module
      */
@@ -15,7 +16,9 @@ public interface ModuleIdentifier {
     }
 
     /**
-     * Returns the original id of this module, which is the direct package name of the runtime class.
+     * Returns the id of this module, which is the direct package name of the runtime class.
+     * <p>
+     * Example: `better_beehive`.
      *
      * @return the direct package name of the runtime class
      */

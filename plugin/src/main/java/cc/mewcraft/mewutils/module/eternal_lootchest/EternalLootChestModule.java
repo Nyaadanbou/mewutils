@@ -1,18 +1,18 @@
 package cc.mewcraft.mewutils.module.eternal_lootchest;
 
-import cc.mewcraft.mewcore.listener.AutoCloseableListener;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.MewPlugin;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import com.google.inject.Inject;
 import org.bukkit.GameMode;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.loot.Lootable;
 
-public class EternalLootChestModule extends ModuleBase implements AutoCloseableListener {
+public class EternalLootChestModule extends ModuleBase implements Listener {
     @Inject
     public EternalLootChestModule(final MewPlugin parent) {
         super(parent);
@@ -30,9 +30,9 @@ public class EternalLootChestModule extends ModuleBase implements AutoCloseableL
                 Player player = event.getPlayer();
                 if (player.getGameMode() != GameMode.CREATIVE) {
                     event.setCancelled(true);
-                    getLang().of("msg_lootchest_cannot_be_destroyed").send(player);
+                    translations().of("msg_lootchest_cannot_be_destroyed").send(player);
                 } else {
-                    getLang().of("msg_lootchest_destroyed_by_creative").send(player);
+                    translations().of("msg_lootchest_destroyed_by_creative").send(player);
                 }
             }
         }

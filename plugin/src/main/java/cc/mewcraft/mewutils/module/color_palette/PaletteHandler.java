@@ -1,6 +1,6 @@
 package cc.mewcraft.mewutils.module.color_palette;
 
-import cc.mewcraft.mewcore.util.PDCUtils;
+import cc.mewcraft.spatula.utils.PDCUtils;
 import me.lucko.helper.item.ItemStackBuilder;
 import net.kyori.adventure.text.format.TextColor;
 import net.wesjd.anvilgui.AnvilGUI;
@@ -9,12 +9,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public abstract class PaletteHandler<E extends Entity> {
 
@@ -27,12 +28,10 @@ public abstract class PaletteHandler<E extends Entity> {
     public static boolean hasAccess(Player player, Entity base) {
         Optional<UUID> uuidAtEntity = PDCUtils.get(base, PDCUtils.UUID, PaletteConstants.OWNER);
         return uuidAtEntity
-            // A UUID is stored in the entity,
-            // so checks if player is the owner
-            .map(value -> player.getUniqueId().equals(value))
-            // No UUID is stored in the entity,
-            // we always return true for this
-            .orElse(true);
+                // A UUID is stored in the entity, so we check if the player is owner
+                .map(value -> player.getUniqueId().equals(value))
+                // No UUID is stored in the entity, so we always return true for this case
+                .orElse(true);
     }
 
 
@@ -56,21 +55,21 @@ public abstract class PaletteHandler<E extends Entity> {
         builder.plugin(this.module.getParentPlugin());
 
         // set the title
-        builder.title(this.module.getLang().of("gui.input_color").plain());
+        builder.title(this.module.translations().of("gui.input_color").plain());
 
         // set the placeholder item
         Color color = getColor((E) base);
         ItemStack build = ItemStackBuilder
-            .of(Material.PAPER)
-            .name(this.module.getLang()
-                .of("gui.left_item_name")
-                .replace("input", TextColor.color(color.asRGB()).asHexString())
-                .plain()
-            ).build();
+                .of(Material.PAPER)
+                .name(this.module.translations()
+                        .of("gui.left_item_name")
+                        .replace("input", TextColor.color(color.asRGB()).asHexString())
+                        .plain()
+                ).build();
         builder.itemLeft(build);
 
         // actions on close
-        builder.onClose(snapshot -> this.module.getLang().of("gui.closed").send(snapshot.getPlayer()));
+        builder.onClose(snapshot -> this.module.translations().of("gui.closed").send(snapshot.getPlayer()));
 
         // actions on complete
         builder.onClick((slot, snapshot) -> {
@@ -80,21 +79,21 @@ public abstract class PaletteHandler<E extends Entity> {
 
             String text = snapshot.getText();
 
-            // Validate input
+            // validate input
             TextColor inputColor = TextColor.fromHexString(text);
             if (text.length() != 7 || inputColor == null) {
-                this.module.getLang().of("msg.incorrect_rgb").replace("input", text).send(player);
+                this.module.translations().of("msg.incorrect_rgb").replace("input", text).send(player);
                 return List.of(AnvilGUI.ResponseAction.close());
             }
 
-            // Apply the color
+            // apply the color
             return List.of(
-                AnvilGUI.ResponseAction.run(() -> {
-                    setColor((E) base, Color.fromRGB(inputColor.value())); // Apply input color to the item
-                    PDCUtils.set(base, PaletteConstants.OWNER, player.getUniqueId()); // Update the owner of the item
-                    this.module.getLang().of("msg.prop_dyed").replace("input", inputColor.asHexString()).send(player);
-                }),
-                AnvilGUI.ResponseAction.close()
+                    AnvilGUI.ResponseAction.run(() -> {
+                        setColor((E) base, Color.fromRGB(inputColor.value())); // Apply input color to the item
+                        PDCUtils.set(base, PaletteConstants.OWNER, player.getUniqueId()); // Update the owner of the item
+                        this.module.translations().of("msg.prop_dyed").replace("input", inputColor.asHexString()).send(player);
+                    }),
+                    AnvilGUI.ResponseAction.close()
             );
         });
 

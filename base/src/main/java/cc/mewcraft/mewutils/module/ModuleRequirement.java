@@ -1,4 +1,4 @@
-package cc.mewcraft.mewutils.api.module;
+package cc.mewcraft.mewutils.module;
 
 public interface ModuleRequirement {
 

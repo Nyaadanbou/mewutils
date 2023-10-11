@@ -4,11 +4,16 @@ plugins {
 }
 
 dependencies {
-    // core libs
-    compileOnlyApi(project(":mewcore"))
-    // libs from core
+    // internal
     compileOnly(libs.configurate)
+    compileOnly(project(":spatula:guice"))
+    compileOnly(project(":spatula:bukkit:command"))
+    compileOnly(project(":spatula:bukkit:message"))
+    compileOnly(project(":spatula:bukkit:utils"))
 
-    compileOnlyApi(libs.server.paper)
-    compileOnlyApi(libs.helper)
+    // server
+    compileOnly(libs.server.paper)
+
+    // helper
+    compileOnly(libs.helper)
 }

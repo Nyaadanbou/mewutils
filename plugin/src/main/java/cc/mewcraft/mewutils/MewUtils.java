@@ -1,9 +1,7 @@
 package cc.mewcraft.mewutils;
 
-import cc.mewcraft.mewcore.message.Translations;
-import cc.mewcraft.mewutils.api.MewPlugin;
-import cc.mewcraft.mewutils.api.command.CommandRegistry;
-import cc.mewcraft.mewutils.api.module.ModuleBase;
+import cc.mewcraft.mewutils.command.CommandRegistry;
+import cc.mewcraft.mewutils.module.ModuleBase;
 import cc.mewcraft.mewutils.module.better_beehive.BetterBeehiveModule;
 import cc.mewcraft.mewutils.module.case_insensitive_commands.CaseInsensitiveCommandsModule;
 import cc.mewcraft.mewutils.module.color_palette.ColorPaletteModule;
@@ -17,17 +15,17 @@ import cc.mewcraft.mewutils.module.packet_filter.PacketFilterModule;
 import cc.mewcraft.mewutils.module.slime_utils.SlimeUtilsModule;
 import cc.mewcraft.mewutils.module.string_replacer.StringReplacerModule;
 import cc.mewcraft.mewutils.module.villager_utils.VillagerUtilsModule;
-import cc.mewcraft.mewutils.util.Log;
+import cc.mewcraft.spatula.message.Translations;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.util.ArrayList;
@@ -35,19 +33,17 @@ import java.util.List;
 
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.LOWER_UNDERSCORE;
-import static net.kyori.adventure.text.Component.text;
 
 public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
 
     public static MewUtils INSTANCE;
 
     // --- config ---
-    private ConfigurationNode configNode; // main config
-    private ConfigurationNode moduleNode; // module on/off
+    private YamlConfigurationLoader mainConfigLoader;
+    private ConfigurationNode mainConfigNode; // main config
+    private YamlConfigurationLoader moduleConfigLoader;
+    private ConfigurationNode moduleConfigNode; // module config to control whether a module should be enabled
     private Translations translations; // main translations
-
-    // --- hooks ---
-    // private Economy economy;
 
     // --- modules ---
     private List<ModuleBase> modules;
@@ -58,29 +54,11 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
     // --- variables ---
     private boolean verbose;
 
-    // public static Economy economy() {
-    //     return INSTANCE.economy;
-    // }
-
-    @Override
-    public boolean isDevMode() {
-        return this.verbose;
-    }
-
-    @Override
-    public boolean isModuleOn(ModuleBase module) {
-        if (this.moduleNode == null) {
-            Log.severe("main config is not initialised yet");
-            return false;
-        }
-        return this.moduleNode.node(LOWER_UNDERSCORE.to(LOWER_HYPHEN, module.getId())).getBoolean();
-    }
-
     @Override
     protected void enable() {
         INSTANCE = this;
 
-        getComponentLogger().info(text("Enabling...").color(NamedTextColor.AQUA));
+        this.getLogger().info("Enabling modules ...");
 
         // --- Load main translations ---
 
@@ -89,17 +67,25 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
         // --- Load main config ---
 
         try {
-            // Load main config: "config.yml"
-            saveDefaultConfig();
-            YamlConfigurationLoader mainConfigLoader = YamlConfigurationLoader.builder().file(getDataFolder().toPath().resolve("config.yml").toFile()).indent(2).build();
-            this.configNode = mainConfigLoader.load();
-            this.verbose = this.configNode.node("verbose").getBoolean();
+            // Load: "config.yml"
+            this.saveDefaultConfig();
+            this.mainConfigLoader = YamlConfigurationLoader.builder()
+                    .path(getDataFolder().toPath().resolve("config.yml"))
+                    .nodeStyle(NodeStyle.BLOCK)
+                    .indent(2)
+                    .build();
+            this.mainConfigNode = this.mainConfigLoader.load();
+            this.verbose = this.mainConfigNode.node("verbose").getBoolean();
 
-            // Load module config: "modules.yml"
-            YamlConfigurationLoader moduleEntryLoader = YamlConfigurationLoader.builder().file(getDataFolder().toPath().resolve("modules.yml").toFile()).indent(2).build();
-            this.moduleNode = moduleEntryLoader.load();
+            // Load: "modules.yml"
+            this.moduleConfigLoader = YamlConfigurationLoader.builder()
+                    .path(getDataFolder().toPath().resolve("modules.yml"))
+                    .nodeStyle(NodeStyle.BLOCK)
+                    .indent(2)
+                    .build();
+            this.moduleConfigNode = this.moduleConfigLoader.load();
         } catch (ConfigurateException e) {
-            getLogger().severe("Failed to load main config! See the stacktrace below for more details");
+            this.getLogger().severe("Failed to load main config! See the stack trace below");
             e.printStackTrace();
         }
 
@@ -107,21 +93,12 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
 
         try {
             this.commandRegistry = new CommandRegistry(this);
-            prepareInternalCommands();
+            this.prepareInternalCommands();
         } catch (Exception e) {
-            getLogger().severe("Failed to initialise commands! See the stacktrace below for more details");
+            this.getLogger().severe("Failed to initialize commands! See the stack trace below");
             e.printStackTrace();
             return;
         }
-
-        // --- Hook 3rd party ---
-
-        // try {
-        //     this.economy = Services.load(Economy.class);
-        // } catch (Exception e) {
-        //     Log.severe("Failed to hook into Vault! See the stacktrace below for more details");
-        //     e.printStackTrace();
-        // }
 
         // --- Configure guice ---
 
@@ -152,16 +129,22 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
 
         for (ModuleBase module : this.modules) {
             if (!isModuleOn(module)) {
-                Log.info("Module " + module.getLongId() + " is disabled in the config");
+                this.getLogger().info("Module " + module.getLongId() + " is disabled in the config");
                 continue;
             }
             try {
                 module.onLoad();
                 module.onEnable();
             } catch (Exception e) {
-                Log.severe("Module " + module.getLongId() + " failed to load/enable! Check the stacktrace below for more details");
+                this.getLogger().severe("Module " + module.getLongId() + " failed to load/enable! See the stack trace below");
                 e.printStackTrace();
             }
+        }
+
+        try {
+            this.moduleConfigLoader.save(this.moduleConfigNode);
+        } catch (ConfigurateException e) {
+            this.getLogger().severe("Failed to save modules.yml");
         }
 
         // --- Make all commands effective ---
@@ -171,16 +154,42 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
 
     @Override
     protected void disable() {
-        getComponentLogger().info(text("Disabling...").color(NamedTextColor.AQUA));
+        this.getLogger().info("Disabling modules ...");
 
         for (ModuleBase module : this.modules) {
             try {
                 module.onDisable();
             } catch (Exception e) {
-                Log.severe("Module " + module.getLongId() + " failed to disbale! Check the stacktrace below for more details");
+                this.getLogger().severe("Module " + module.getLongId() + " failed to disable! Check the stacktrace below for more details");
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public boolean isDevMode() {
+        return this.verbose;
+    }
+
+    @Override
+    public boolean isModuleOn(ModuleBase module) {
+        if (this.moduleConfigNode == null) {
+            this.getLogger().severe("The modules.yml is not initialized");
+            return false;
+        }
+
+        String path = LOWER_UNDERSCORE.to(LOWER_HYPHEN, module.getId());
+        ConfigurationNode node = this.moduleConfigNode.node(path);
+
+        // Disable the module by default if the node not already existing
+        try {
+            if (node.virtual())
+                node.set(false);
+        } catch (SerializationException e) {
+            return false;
+        }
+
+        return node.getBoolean();
     }
 
     public void reload() {
@@ -189,41 +198,29 @@ public final class MewUtils extends ExtendedJavaPlugin implements MewPlugin {
     }
 
     @Override
-    public CommandRegistry getCommandRegistry() {
+    public CommandRegistry commandRegistry() {
         return this.commandRegistry;
     }
 
-    @Override public ClassLoader getClassLoader0() {
-        return getClassLoader();
+    @Override public ClassLoader parentClassLoader() {
+        return this.getClassLoader();
     }
 
-    @Override public Translations getLang() {
+    @Override public Translations translations() {
         return this.translations;
     }
 
-    @Override public ConfigurationNode getConfigNode() {
-        return this.configNode;
-    }
-
     private void prepareInternalCommands() {
-        // for now, it's just a reload command
+        // At the moment, we only need a reload command for the parent plugin
         this.commandRegistry.prepareCommand(this.commandRegistry
-            .commandBuilder("mewutils")
-            .permission("mew.admin")
-            .literal("reload")
-            .handler(context -> {
-                CommandSender sender = context.getSender();
-                reload();
-                getLang().of("reloaded").send(sender);
-            }).build()
+                .commandBuilder("mewutils")
+                .permission("mew.admin")
+                .literal("reload")
+                .handler(context -> {
+                    this.reload();
+                    this.translations().of("reloaded").send(context.getSender());
+                }).build()
         );
     }
-
-    // private void hookPlaceholderAPI() {
-    //     if (HookChecker.hasPlaceholderAPI()) {
-    //         new MewUtilsExpansion().register();
-    //         Log.info("Hooked into PlaceholderAPI");
-    //     }
-    // }
 
 }

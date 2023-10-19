@@ -23,7 +23,7 @@ public class ColorPaletteModule extends ModuleBase {
     }
 
     @Override protected void enable() {
-        registerListener(new FurnitureListener(this));
+        registerListenerAndBind(new FurnitureListener(this));
     }
 
     @Override public boolean checkRequirement() {

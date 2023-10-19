@@ -32,7 +32,7 @@ public class DropOverflowModule extends ModuleBase implements Listener {
     }
 
     @Override protected void enable() {
-        registerListener(this);
+        registerListenerAndBind(this);
     }
 
     @EventHandler

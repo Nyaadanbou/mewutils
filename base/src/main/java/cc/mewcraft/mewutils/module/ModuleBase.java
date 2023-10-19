@@ -15,6 +15,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -23,11 +27,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 
 import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.Component.text;
@@ -168,16 +167,16 @@ public abstract class ModuleBase
         return this.directory;
     }
 
-    private record AutoCloseableListenerWrapper(Listener listener) implements Terminable {
+    private record TerminableListenerWrapper(Listener listener) implements Terminable {
         @Override public void close() {
             HandlerList.unregisterAll(listener);
         }
     }
 
-    public final <T extends Listener> void registerListener(@NonNull T listener) {
+    public final <T extends Listener> void registerListenerAndBind(@NonNull T listener) {
         requireNonNull(listener);
         getParentPlugin().getServer().getPluginManager().registerEvents(listener, getParentPlugin());
-        bind(new AutoCloseableListenerWrapper(listener));
+        bind(new TerminableListenerWrapper(listener));
     }
 
     public final void registerCommand(@NonNull Function<CommandRegistry, Command.Builder<CommandSender>> command) {

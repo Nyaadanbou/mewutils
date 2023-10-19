@@ -38,7 +38,7 @@ public class DeathLoggerModule extends ModuleBase implements Listener {
     }
 
     @Override protected void enable() {
-        registerListener(this);
+        registerListenerAndBind(this);
     }
 
     @EventHandler(ignoreCancelled = true)

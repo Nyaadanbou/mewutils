@@ -50,7 +50,7 @@ public class OreAnnouncerModule extends ModuleBase implements Listener {
     @Override
     protected void enable() {
         // register listener
-        registerListener(new BlockListener(this));
+        registerListenerAndBind(new BlockListener(this));
 
         // register command
         registerCommand(registry -> registry

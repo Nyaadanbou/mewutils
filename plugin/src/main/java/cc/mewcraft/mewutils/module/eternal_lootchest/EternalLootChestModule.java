@@ -20,7 +20,7 @@ public class EternalLootChestModule extends ModuleBase implements Listener {
 
     @Override
     protected void enable() throws Exception {
-        registerListener(this);
+        registerListenerAndBind(this);
     }
 
     @EventHandler(ignoreCancelled = true)

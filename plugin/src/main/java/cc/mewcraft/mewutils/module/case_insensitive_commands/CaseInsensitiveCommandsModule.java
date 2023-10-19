@@ -18,7 +18,7 @@ public class CaseInsensitiveCommandsModule extends ModuleBase implements Listene
     }
 
     @Override protected void enable() throws Exception {
-        registerListener(this);
+        registerListenerAndBind(this);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

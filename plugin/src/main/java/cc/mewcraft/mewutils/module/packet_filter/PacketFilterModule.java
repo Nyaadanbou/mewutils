@@ -56,7 +56,7 @@ public class PacketFilterModule extends ModuleBase implements Listener {
     }
 
     @Override protected void postEnable() {
-        registerListener(new EssentialsListener(this));
+        registerListenerAndBind(new EssentialsListener(this));
         new ProtocolLibHook(this).bindWith(this);
     }
 

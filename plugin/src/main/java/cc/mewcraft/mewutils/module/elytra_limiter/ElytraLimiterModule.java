@@ -66,7 +66,7 @@ public class ElytraLimiterModule extends ModuleBase {
     }
 
     @Override protected void enable() {
-        registerListener(new ElytraBoostListener(this));
+        registerListenerAndBind(new ElytraBoostListener(this));
     }
 
     public ProgressbarDisplay getProgressbarMessenger() {

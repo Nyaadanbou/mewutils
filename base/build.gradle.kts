@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     // internal
-    compileOnly(libs.configurate)
+    compileOnly(libs.configurate.yaml)
     compileOnly(project(":spatula:guice"))
     compileOnly(project(":spatula:bukkit:command"))
     compileOnly(project(":spatula:bukkit:message"))

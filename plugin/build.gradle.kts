@@ -20,7 +20,7 @@ dependencies {
     implementation(project(":spatula:bukkit:command"))
     implementation(project(":spatula:bukkit:message"))
     implementation(project(":spatula:bukkit:utils"))
-    implementation(libs.configurate)
+    implementation(libs.configurate.yaml)
     implementation(libs.anvilgui)
 
     // server

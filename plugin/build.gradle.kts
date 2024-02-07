@@ -3,6 +3,7 @@ import net.minecrell.pluginyml.paper.PaperPluginDescription
 plugins {
     id("cc.mewcraft.repo-conventions")
     id("cc.mewcraft.java-conventions")
+    id("cc.mewcraft.guice-conventions")
     id("cc.mewcraft.deploy-conventions")
     alias(libs.plugins.pluginyml.paper)
 }
@@ -16,7 +17,6 @@ description = "Provides small features that do not fit into big ones"
 dependencies {
     // internal
     implementation(project(":mewutils:base"))
-    implementation(project(":spatula:guice"))
     implementation(project(":spatula:bukkit:command"))
     implementation(project(":spatula:bukkit:message"))
     implementation(project(":spatula:bukkit:utils"))
